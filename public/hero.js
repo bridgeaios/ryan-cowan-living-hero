@@ -78,14 +78,30 @@ const DEFAULT = {
   fit: "contain",
 };
 
-const cfg = {
-  ...DEFAULT,
-  ...(window.RYAN_CONFIG || {}),
-  hotspots: {
-    ...DEFAULT.hotspots,
-    ...((window.RYAN_CONFIG || {}).hotspots || {}),
-  },
-};
+async function loadConfig() {
+  let fileCfg = {};
+  try {
+    const res = await fetch("/defaults.json", {
+      headers: { Accept: "application/json" },
+    });
+    if (res.ok) fileCfg = await res.json();
+  } catch {
+    /* keep embedded DEFAULT */
+  }
+  const winCfg = window.RYAN_CONFIG || {};
+  return {
+    ...DEFAULT,
+    ...fileCfg,
+    ...winCfg,
+    hotspots: {
+      ...DEFAULT.hotspots,
+      ...(fileCfg.hotspots || {}),
+      ...(winCfg.hotspots || {}),
+    },
+  };
+}
+
+const cfg = await loadConfig();
 
 const hero = document.getElementById("hero");
 const regions = document.getElementById("regions");

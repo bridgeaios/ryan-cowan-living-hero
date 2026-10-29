@@ -91,13 +91,48 @@ type GithubBundle = typeof CURATED_FALLBACK & {
   rateLimit?: { remaining: number | null; reset: number | null };
 };
 
-function jsonResponse(body: unknown, status = 200, maxAge = CACHE_TTL_SECONDS) {
+const SECURITY_HEADERS: Record<string, string> = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Content-Security-Policy":
+    "default-src 'self'; img-src 'self' data: https://avatars.githubusercontent.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'",
+};
+
+const ALLOWED_ORIGINS = new Set([
+  "https://empty-night-583f.thebridgeaiagency.workers.dev",
+  "http://127.0.0.1:8787",
+  "http://localhost:8787",
+]);
+
+function withSecurityHeaders(headers: HeadersInit = {}): Headers {
+  const h = new Headers(headers);
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
+    if (!h.has(k)) h.set(k, v);
+  }
+  return h;
+}
+
+function corsOrigin(request?: Request): string {
+  const origin = request?.headers.get("Origin") || "";
+  if (origin && ALLOWED_ORIGINS.has(origin)) return origin;
+  return "https://empty-night-583f.thebridgeaiagency.workers.dev";
+}
+
+function jsonResponse(
+  body: unknown,
+  status = 200,
+  maxAge = CACHE_TTL_SECONDS,
+  request?: Request,
+) {
   return Response.json(body, {
     status,
-    headers: {
+    headers: withSecurityHeaders({
       "Cache-Control": `public, max-age=${maxAge}`,
-      "Access-Control-Allow-Origin": "*",
-    },
+      "Access-Control-Allow-Origin": corsOrigin(request),
+      Vary: "Origin",
+    }),
   });
 }
 
@@ -162,7 +197,7 @@ function mapRepos(reposRaw: Array<Record<string, unknown>>) {
 }
 
 async function fetchGithubBundle(
-  _request: Request,
+  request: Request,
   env: Env,
 ): Promise<Response> {
   const cache = caches.default;
@@ -192,6 +227,7 @@ async function fetchGithubBundle(
         message: humanMessage(reason, profileRes.status),
         authConfigured,
         rateLimit,
+        request,
       });
     }
 
@@ -249,6 +285,7 @@ async function fetchGithubBundle(
       body,
       200,
       body.stale ? FALLBACK_TTL_SECONDS : CACHE_TTL_SECONDS,
+      request,
     );
     await cache.put(cacheKey, response.clone());
     try {
@@ -266,6 +303,7 @@ async function fetchGithubBundle(
       message: humanMessage("network_error", 0),
       authConfigured,
       rateLimit: { remaining: null, reset: null },
+      request,
     });
   }
 }
@@ -280,6 +318,7 @@ async function serveStaleOrFallback(
     message: string;
     authConfigured: boolean;
     rateLimit: { remaining: number | null; reset: number | null };
+    request?: Request;
   },
 ): Promise<Response> {
   try {
@@ -296,7 +335,12 @@ async function serveStaleOrFallback(
         authConfigured: meta.authConfigured,
         rateLimit: meta.rateLimit,
       };
-      const response = jsonResponse(body, 200, FALLBACK_TTL_SECONDS);
+      const response = jsonResponse(
+        body,
+        200,
+        FALLBACK_TTL_SECONDS,
+        meta.request,
+      );
       await cache.put(cacheKey, response.clone());
       return response;
     }
@@ -315,19 +359,31 @@ async function serveStaleOrFallback(
     rateLimit: meta.rateLimit,
     fetchedAt: new Date().toISOString(),
   };
-  const response = jsonResponse(body, 200, FALLBACK_TTL_SECONDS);
+  const response = jsonResponse(
+    body,
+    200,
+    FALLBACK_TTL_SECONDS,
+    meta.request,
+  );
   await cache.put(cacheKey, response.clone());
   return response;
 }
 
 function withLongCache(res: Response, maxAge = 86400): Response {
-  const headers = new Headers(res.headers);
+  const headers = withSecurityHeaders(res.headers);
   headers.set(
     "Cache-Control",
     `public, max-age=${maxAge}, stale-while-revalidate=604800`,
   );
   headers.set("X-Hero-Source", "assets");
   return new Response(res.body, { status: res.status, headers });
+}
+
+function withAssetSecurity(res: Response): Response {
+  return new Response(res.body, {
+    status: res.status,
+    headers: withSecurityHeaders(res.headers),
+  });
 }
 
 async function serveHero(request: Request, env: Env): Promise<Response> {
@@ -342,7 +398,7 @@ async function serveHero(request: Request, env: Env): Promise<Response> {
       cf: { cacheTtl: 86400, cacheEverything: true },
     });
     if (cdnRes.ok) {
-      const headers = new Headers(cdnRes.headers);
+      const headers = withSecurityHeaders(cdnRes.headers);
       headers.set(
         "Cache-Control",
         "public, max-age=86400, stale-while-revalidate=604800",
@@ -367,19 +423,22 @@ export default {
     }
 
     if (url.pathname === "/api/health") {
-      return Response.json({
-        ok: true,
-        worker: "empty-night-583f",
-        subject: "Ryan Cowan",
-        github: GITHUB_USER,
-        githubTokenConfigured: Boolean(env.GITHUB_TOKEN?.trim()),
-      });
+      return Response.json(
+        {
+          ok: true,
+          worker: "empty-night-583f",
+          subject: "Ryan Cowan",
+          github: GITHUB_USER,
+          githubTokenConfigured: Boolean(env.GITHUB_TOKEN?.trim()),
+        },
+        { headers: withSecurityHeaders() },
+      );
     }
 
     if (url.pathname === HERO_PATH) {
       return serveHero(request, env);
     }
 
-    return env.ASSETS.fetch(request);
+    return withAssetSecurity(await env.ASSETS.fetch(request));
   },
 };

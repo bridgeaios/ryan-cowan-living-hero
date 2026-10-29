@@ -1,7 +1,10 @@
 /**
  * Deploy bundled Worker via classic scripts PUT (bypasses versions/assets APIs).
- * Requires CLOUDFLARE_API_TOKEN with Workers Scripts Edit on account
- * f9681a1d65755b13127a9ed67b6fab0f.
+ * Target account MUST match wrangler.jsonc (live empty-night-583f on
+ * Thebridgeaiagency account). Do not point this at a different account ID
+ * unless you intentionally fork the Worker.
+ *
+ * Requires CLOUDFLARE_API_TOKEN with Workers Scripts Edit on that account.
  *
  * Usage:
  *   npx wrangler deploy --dry-run --outdir=dist
@@ -15,7 +18,9 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
 const token = process.env.CLOUDFLARE_API_TOKEN;
-const account = process.env.CLOUDFLARE_ACCOUNT_ID || "f9681a1d65755b13127a9ed67b6fab0f";
+/** Authoritative live account for empty-night-583f (matches wrangler.jsonc). */
+const account =
+  process.env.CLOUDFLARE_ACCOUNT_ID || "8e208744c31fc18f880f59bf18d4c645";
 const script = "empty-night-583f";
 
 if (!token) {
@@ -75,5 +80,5 @@ console.log(res.status, body.slice(0, 2000));
 if (!res.ok) process.exit(1);
 
 console.log(
-  `\nLive: https://empty-night-583f.ryanpcowan-f96.workers.dev/\n`,
+  `\nLive: https://empty-night-583f.thebridgeaiagency.workers.dev/\n`,
 );

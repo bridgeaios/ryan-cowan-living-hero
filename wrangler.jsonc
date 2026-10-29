@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "empty-night-583f",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-29",
+  "account_id": "f9681a1d65755b13127a9ed67b6fab0f",
+  "workers_dev": true,
+  "preview_urls": true,
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  "rules": [
+    { "type": "Text", "globs": ["**/*.html", "**/*.css", "**/*.js", "**/*.json"], "fallthrough": true },
+    { "type": "Data", "globs": ["**/*.webp"], "fallthrough": true }
+  ]
+}

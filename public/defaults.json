@@ -1,0 +1,78 @@
+{
+  "hotspots": {
+    "ryan": {
+      "label": "Ryan",
+      "x": 46,
+      "y": 26,
+      "w": 19,
+      "h": 40,
+      "kind": "speech",
+      "speech": "I love my family and my kids, our time is NOW! They call me Ryanstein in the district!",
+      "rate": 0.92,
+      "pitch": 0.82,
+      "volume": 1
+    },
+    "kids": {
+      "label": "Kids",
+      "x": 22,
+      "y": 25,
+      "w": 20,
+      "h": 20,
+      "kind": "speech",
+      "speech": "WE LOVE YOU DADDY!",
+      "rate": 1.1,
+      "pitch": 1.6,
+      "volume": 1
+    },
+    "baby": {
+      "label": "Baby",
+      "x": 48,
+      "y": 50,
+      "w": 16,
+      "h": 25,
+      "kind": "baby",
+      "speech": "",
+      "rate": 1,
+      "pitch": 1,
+      "volume": 0.6
+    },
+    "beach": {
+      "label": "Beach",
+      "x": 84,
+      "y": 27,
+      "w": 26,
+      "h": 36,
+      "kind": "beach",
+      "speech": "",
+      "rate": 1,
+      "pitch": 1,
+      "volume": 0.25
+    },
+    "family": {
+      "label": "Family",
+      "x": 23,
+      "y": 79,
+      "w": 24,
+      "h": 20,
+      "kind": "speech",
+      "speech": "Family. Unity is strength. Our time is now.",
+      "rate": 0.98,
+      "pitch": 0.9,
+      "volume": 1
+    }
+  },
+  "accent": "#22e6ff",
+  "glow": 0.55,
+  "hoverScale": 1.25,
+  "dwellMs": 90,
+  "stopOnExit": true,
+  "showHints": true,
+  "voiceLang": "en-ZA",
+  "voiceName": "",
+  "voiceEnabled": true,
+  "backgroundMotion": true,
+  "reduceMotion": false,
+  "mute": false,
+  "aspect": "1648 / 928",
+  "fit": "contain"
+}

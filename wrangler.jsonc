@@ -3,7 +3,9 @@
   "name": "empty-night-583f",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-29",
-  "account_id": "f9681a1d65755b13127a9ed67b6fab0f",
+  // Default: authenticated Bridge OAuth (workers:write). Switch to env ryan when you have
+  // Workers Scripts Edit on account f9681a1d65755b13127a9ed67b6fab0f (ryanpcowan-f96).
+  "account_id": "8e208744c31fc18f880f59bf18d4c645",
   "workers_dev": true,
   "preview_urls": true,
   "observability": {
@@ -15,5 +17,17 @@
   "rules": [
     { "type": "Text", "globs": ["**/*.html", "**/*.css", "**/*.js", "**/*.json"], "fallthrough": true },
     { "type": "Data", "globs": ["**/*.webp"], "fallthrough": true }
-  ]
+  ],
+  "env": {
+    "ryan": {
+      "account_id": "f9681a1d65755b13127a9ed67b6fab0f",
+      "name": "empty-night-583f",
+      "workers_dev": true,
+      "preview_urls": true,
+      "observability": {
+        "enabled": true,
+        "traces": { "enabled": true }
+      }
+    }
+  }
 }

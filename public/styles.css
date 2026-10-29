@@ -86,7 +86,7 @@ body {
 .art {
   position: absolute;
   inset: 0;
-  background: url("/assets/ryan-hero.webp") center / 100% 100% no-repeat;
+  background: url("https://cdn.jsdelivr.net/gh/bridgeaios/ryan-cowan-living-hero@main/public/assets/ryan-hero.webp") center / 100% 100% no-repeat;
   transform: scale(1.005);
   pointer-events: none;
 }
@@ -467,3 +467,4 @@ section.connect {
     transition: none !important;
   }
 }
+

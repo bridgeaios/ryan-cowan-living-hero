@@ -1,54 +1,24 @@
-import html from "../public/index.html";
-import css from "../public/styles.css";
-import heroJs from "../public/hero.js";
-import profileJs from "../public/profile.js";
-import defaultsJson from "../public/defaults.json";
-import heroWebp from "../public/assets/ryan-hero.webp";
+export interface Env {
+  SITE: KVNamespace;
+}
 
 const GITHUB_USER = "ryanehsacoza";
 const CACHE_TTL_SECONDS = 300;
+const HERO_CDN =
+  "https://cdn.jsdelivr.net/gh/bridgeaios/ryan-cowan-living-hero@main/public/assets/ryan-hero.webp";
 
-type GithubProfile = {
-  login: string;
-  name: string | null;
-  bio: string | null;
-  avatar_url: string;
-  html_url: string;
-  blog: string;
-  location: string | null;
-  twitter_username: string | null;
-  public_repos: number;
-  followers: number;
-  following: number;
-  created_at: string;
+const CONTENT_TYPES: Record<string, string> = {
+  "/": "text/html; charset=utf-8",
+  "/index.html": "text/html; charset=utf-8",
+  "/styles.css": "text/css; charset=utf-8",
+  "/hero.js": "text/javascript; charset=utf-8",
+  "/profile.js": "text/javascript; charset=utf-8",
 };
-
-type GithubRepo = {
-  name: string;
-  description: string | null;
-  html_url: string;
-  language: string | null;
-  stargazers_count: number;
-  forks_count: number;
-  updated_at: string;
-  homepage: string | null;
-  fork: boolean;
-  topics?: string[];
-};
-
-function text(body: string, type: string, cache = "public, max-age=300"): Response {
-  return new Response(body, {
-    headers: {
-      "Content-Type": type,
-      "Cache-Control": cache,
-    },
-  });
-}
 
 async function fetchGithubBundle(request: Request): Promise<Response> {
   const cache = caches.default;
   const cacheKey = new Request(
-    new URL("/api/github-bundle", request.url).toString(),
+    new URL("/api/github", request.url).toString(),
     request,
   );
   const cached = await cache.match(cacheKey);
@@ -75,8 +45,10 @@ async function fetchGithubBundle(request: Request): Promise<Response> {
     );
   }
 
-  const profile = (await profileRes.json()) as GithubProfile;
-  const reposRaw = reposRes.ok ? ((await reposRes.json()) as GithubRepo[]) : [];
+  const profile = (await profileRes.json()) as Record<string, unknown>;
+  const reposRaw = reposRes.ok
+    ? ((await reposRes.json()) as Array<Record<string, unknown>>)
+    : [];
   const repos = reposRaw
     .filter((r) => !r.fork)
     .map((r) => ({
@@ -88,7 +60,7 @@ async function fetchGithubBundle(request: Request): Promise<Response> {
       forks_count: r.forks_count,
       updated_at: r.updated_at,
       homepage: r.homepage,
-      topics: r.topics ?? [],
+      topics: (r.topics as string[]) || [],
     }));
 
   const body = {
@@ -118,34 +90,15 @@ async function fetchGithubBundle(request: Request): Promise<Response> {
       "Access-Control-Allow-Origin": "*",
     },
   });
-
   await cache.put(cacheKey, response.clone());
   return response;
 }
 
-const routes: Record<string, () => Response> = {
-  "/": () => text(html, "text/html; charset=utf-8", "public, max-age=60"),
-  "/index.html": () => text(html, "text/html; charset=utf-8", "public, max-age=60"),
-  "/styles.css": () => text(css, "text/css; charset=utf-8"),
-  "/hero.js": () => text(heroJs, "text/javascript; charset=utf-8"),
-  "/profile.js": () => text(profileJs, "text/javascript; charset=utf-8"),
-  "/defaults.json": () =>
-    text(defaultsJson, "application/json; charset=utf-8"),
-  "/assets/ryan-hero.webp": () =>
-    new Response(heroWebp, {
-      headers: {
-        "Content-Type": "image/webp",
-        "Cache-Control": "public, max-age=86400, immutable",
-      },
-    }),
-};
-
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    const path = url.pathname === "" ? "/" : url.pathname;
 
-    if (path === "/api/github" || path === "/api/profile") {
+    if (url.pathname === "/api/github" || url.pathname === "/api/profile") {
       try {
         return await fetchGithubBundle(request);
       } catch (err) {
@@ -154,7 +107,7 @@ export default {
       }
     }
 
-    if (path === "/api/health") {
+    if (url.pathname === "/api/health") {
       return Response.json({
         ok: true,
         worker: "empty-night-583f",
@@ -163,9 +116,36 @@ export default {
       });
     }
 
-    const handler = routes[path];
-    if (handler) return handler();
+    if (url.pathname === "/assets/ryan-hero.webp") {
+      return Response.redirect(HERO_CDN, 302);
+    }
 
-    return text(html, "text/html; charset=utf-8", "public, max-age=60");
+    const key =
+      url.pathname === "/" || url.pathname === ""
+        ? "index.html"
+        : url.pathname.replace(/^\//, "");
+
+    const body = await env.SITE.get(key);
+    if (body == null) {
+      const fallback = await env.SITE.get("index.html");
+      if (fallback == null) {
+        return new Response("Site content not loaded", { status: 503 });
+      }
+      return new Response(fallback, {
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "public, max-age=60",
+        },
+      });
+    }
+
+    const pathKey = url.pathname === "/" ? "/" : `/${key}`;
+    return new Response(body, {
+      headers: {
+        "content-type":
+          CONTENT_TYPES[pathKey] || "application/octet-stream",
+        "cache-control": "public, max-age=300",
+      },
+    });
   },
 };

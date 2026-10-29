@@ -82,24 +82,33 @@ body {
 
 .hero {
   position: relative;
-  aspect-ratio: 1648 / 928;
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
+  padding: 0 8px;
   background: #001321;
   isolation: isolate;
+}
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  max-height: min(86vh, 940px);
+  margin: 0 auto;
+  background: #001321;
   overflow: hidden;
+  isolation: isolate;
 }
 .art {
   position: absolute;
   inset: 0;
-  /* Local Worker asset first; jsDelivr CDN as layered fallback if origin miss */
+  /* Stage aspect matches the asset — use 100% so image-map % overlays stay honest */
   background:
-    url("/assets/ryan-hero.webp") center / cover no-repeat,
+    url("/assets/ryan-hero.webp") center / 100% 100% no-repeat,
     url("https://cdn.jsdelivr.net/gh/bridgeaios/ryan-cowan-living-hero@master/public/assets/ryan-hero.webp")
-      center / cover no-repeat,
+      center / 100% 100% no-repeat,
     #001321;
-  transform: scale(1.005);
+  transform: scale(1.002);
   pointer-events: none;
 }
 .hero.moving .art {
@@ -194,6 +203,10 @@ body {
   outline: none;
   touch-action: manipulation;
 }
+.region.anchor-tl {
+  transform: none;
+  border-radius: 10px;
+}
 .region:before {
   content: "";
   position: absolute;
@@ -216,6 +229,12 @@ body {
   border-color: color-mix(in srgb, var(--accent) 72%, transparent);
   box-shadow: 0 0 31px rgba(0, 215, 255, 0.3), inset 0 0 39px rgba(0, 215, 255, 0.14);
 }
+.region.chrome:is(:hover, :focus-visible, .active):before {
+  transform: none;
+  background: rgba(8, 40, 58, 0.28);
+  border-color: color-mix(in srgb, var(--accent) 78%, transparent);
+  box-shadow: 0 0 18px rgba(0, 215, 255, 0.28);
+}
 .region:is(:hover, :focus-visible, .active):after {
   content: "";
   position: absolute;
@@ -225,11 +244,43 @@ body {
   animation: pulse 1.7s ease-in-out infinite;
   pointer-events: none;
 }
-.region[data-id="beach"],
-.region[data-id="family"],
-.region[data-id="kids"] { border-radius: 30%; }
-.region[data-id="ryan"],
-.region[data-id="baby"] { border-radius: 40%; }
+.region.chrome:is(:hover, :focus-visible, .active):after {
+  display: none;
+}
+.region.audio[data-id="beach"],
+.region.audio[data-id="family"],
+.region.audio[data-id="kids"] { border-radius: 30%; }
+.region.audio[data-id="ryan"],
+.region.audio[data-id="baby"] { border-radius: 40%; }
+.region .chip {
+  position: absolute;
+  left: 50%;
+  top: -0.35rem;
+  transform: translate(-50%, -100%);
+  z-index: 4;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #dff8ff;
+  background: rgba(2, 18, 30, 0.82);
+  border: 1px solid rgba(79, 232, 255, 0.35);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.region.chrome .chip {
+  left: 0.35rem;
+  top: 0.35rem;
+  transform: none;
+  opacity: 0.55;
+}
+.region:is(:hover, :focus-visible, .active) .chip {
+  opacity: 1;
+}
 .region .sr {
   position: absolute;
   clip-path: inset(50%);
@@ -489,8 +540,9 @@ body {
   .presence { grid-template-columns: 1fr; }
   .presence-visual { order: -1; }
   .hint { top: 8px; right: 8px; padding: 5px 8px; }
-  .hero { aspect-ratio: 4 / 5; max-height: 78vh; }
-  .art { background-position: 40% center; }
+  /* Keep native montage aspect so image-map buttons stay aligned */
+  .stage { max-height: none; }
+  .region .chip { font-size: 0.52rem; padding: 0.12rem 0.35rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

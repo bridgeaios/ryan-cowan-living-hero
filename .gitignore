@@ -24,3 +24,7 @@ kv-*.txt
 payload*.json
 _*.txt
 scripts/gen-kv-exec.js
+_audit-*
+_audit*.py
+_audit*.png
+_audit*.webp

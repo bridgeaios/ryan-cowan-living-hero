@@ -164,9 +164,15 @@ function synthesized(kind, h) {
   }
 }
 
+let audioUnlocked = false;
+
 function speak(h) {
   if (!("speechSynthesis" in window) || !cfg.voiceEnabled) {
-    status("Speech unavailable");
+    status("Speech engine not available in this browser");
+    return;
+  }
+  if (!audioUnlocked) {
+    status("Tap Enable audio first, then try again");
     return;
   }
   const utt = new SpeechSynthesisUtterance(h.speech || "");
@@ -193,7 +199,7 @@ function speak(h) {
   utt.onerror = () => {
     if (current === token) {
       hero.classList.remove("talking");
-      status("Speech unavailable or blocked");
+      status("Speech blocked — try Enable audio, then click the region");
     }
   };
   window.speechSynthesis.cancel();
@@ -210,7 +216,13 @@ function play(id, element) {
   hint.classList.add("hidden");
   status(h.label + " · " + (h.kind === "speech" ? "voice" : "ambient sound"));
   if (h.kind === "speech") speak(h);
-  else synthesized(h.kind, h);
+  else {
+    if (!audioUnlocked) {
+      status("Tap Enable audio first, then try again");
+      return;
+    }
+    synthesized(h.kind, h);
+  }
 }
 
 for (const [id, h] of Object.entries(cfg.hotspots)) {
@@ -254,18 +266,25 @@ for (const [id, h] of Object.entries(cfg.hotspots)) {
   regions.append(el);
 }
 
-document.getElementById("enable").addEventListener("click", () => {
+document.getElementById("enable").addEventListener("click", async () => {
   muted = false;
+  audioUnlocked = true;
   try {
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-    ctx.resume();
+    await ctx.resume();
   } catch {
     /* ignore */
   }
-  const u = new SpeechSynthesisUtterance("");
-  u.volume = 0;
-  if ("speechSynthesis" in window) window.speechSynthesis.speak(u);
-  status("Audio ready · hover over the image");
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.getVoices();
+    const u = new SpeechSynthesisUtterance("Audio ready");
+    u.volume = 0.01;
+    u.rate = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }
+  status("Audio unlocked · hover or tap a glowing region");
+  hint?.classList.add("hidden");
 });
 
 document.getElementById("mute").addEventListener("click", (e) => {
@@ -276,22 +295,3 @@ document.getElementById("mute").addEventListener("click", (e) => {
 
 document.getElementById("stop").addEventListener("click", stop);
 window.addEventListener("pagehide", stop);
-
-const heading = document.querySelector("[data-split]");
-const val = heading.textContent;
-heading.replaceChildren(
-  ...[...val].map((char, i) => {
-    const span = document.createElement("span");
-    span.className = "letter";
-    span.textContent = char === " " ? "\u00a0" : char;
-    span.style.transitionDelay = i * 45 + "ms";
-    return span;
-  }),
-);
-new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries)
-      if (entry.isIntersecting) entry.target.classList.add("visible");
-  },
-  { threshold: 0.15 },
-).observe(heading);

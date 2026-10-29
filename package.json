@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "deploy:ryan": "wrangler deploy --env ryan",
+    "deploy:multipart": "node scripts/deploy-multipart.mjs",
     "types": "wrangler types"
   },
   "devDependencies": {

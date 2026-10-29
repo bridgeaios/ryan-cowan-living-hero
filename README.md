@@ -6,9 +6,7 @@ Personal living-hero profile for **Ryan Cowan**, wired to public GitHub data for
 
 **https://empty-night-583f.thebridgeaiagency.workers.dev/**
 
-Interactive hero, Git presence, and public repos. Hero image loads from the repo CDN; `/api/github` serves cached profile data.
-
-> Target hostname `empty-night-583f.ryanpcowan-f96.workers.dev` is on account `f9681a1d65755b13127a9ed67b6fab0f`. The API token shared in chat can **read** that Worker but cannot **write**/deploy. To publish there, create an API token with **Workers Scripts Edit** (and optionally Workers KV) on that account, then run `npm run deploy` with `CLOUDFLARE_ACCOUNT_ID=f9681a1d65755b13127a9ed67b6fab0f`.
+Interactive hero, Git presence, and public repos. Hero ships as Worker static assets (`/assets/ryan-hero.webp`) with CDN fallback; `/api/github` serves cached profile data (KV last-good + curated fallback on upstream 403/429).
 
 ## Local
 
@@ -17,23 +15,40 @@ npm install
 npm run dev
 ```
 
-After changing `public/*`, sync KV:
-
 ```bash
-npx wrangler kv key put --remote --namespace-id=3577f04b88e04971b986b4388b4c3e61 index.html --path=public/index.html
-npx wrangler kv key put --remote --namespace-id=3577f04b88e04971b986b4388b4c3e61 styles.css --path=public/styles.css
-npx wrangler kv key put --remote --namespace-id=3577f04b88e04971b986b4388b4c3e61 hero.js --path=public/hero.js
-npx wrangler kv key put --remote --namespace-id=3577f04b88e04971b986b4388b4c3e61 profile.js --path=public/profile.js
 npm run deploy
 ```
 
+## Optional: GitHub token (recommended)
+
+Public GitHub API often returns **403** without auth once rate limits are hit. Wire an optional secret (never commit the value):
+
+**PowerShell (Windows)**
+
+```powershell
+# Create a classic PAT with public_repo (or fine-grained: read public repos), then:
+$env:GITHUB_TOKEN = "ghp_..."   # session only; do not commit
+$env:GITHUB_TOKEN | npx wrangler secret put GITHUB_TOKEN
+Remove-Item Env:GITHUB_TOKEN
+```
+
+**bash**
+
+```bash
+read -s GITHUB_TOKEN
+printf '%s' "$GITHUB_TOKEN" | npx wrangler secret put GITHUB_TOKEN
+unset GITHUB_TOKEN
+```
+
+Confirm (boolean only): `curl -s https://empty-night-583f.thebridgeaiagency.workers.dev/api/health` → `githubTokenConfigured: true`.
+
 ## Stack
 
-- Cloudflare Worker + KV (`SITE`) for HTML/CSS/JS
-- `/api/github` — cached GitHub profile + repos
-- Living Hero 2.0 hotspots (improved typography, brand overlay, profile sections)
-- Hero art via jsDelivr from this repo’s `public/assets/ryan-hero.webp`
+- Cloudflare Worker + static assets (`public/`) + KV (`SITE`) for last-good GitHub bundle
+- `/api/github` — edge-cached GitHub profile + repos; curated fallback on failure
+- `/api/health` — liveness + whether `GITHUB_TOKEN` is configured
+- Living Hero hotspots (`hero.js`) + profile feed (`profile.js`)
 
 ## Security
 
-Never commit API tokens or R2 keys. Prefer `wrangler login` or process-env `CLOUDFLARE_API_TOKEN`. Rotate any token that was pasted into chat.
+Never commit API tokens or secrets. Prefer `wrangler login` (OAuth) or process-env `CLOUDFLARE_API_TOKEN`. Rotate any token that was pasted into chat.

@@ -3,103 +3,163 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ryan Cowan · Living Profile</title>
-  <meta name="description" content="Ryan Cowan — personal living-hero profile and GitHub presence (@ryanehsacoza). Our time is now.">
-  <meta property="og:title" content="Ryan Cowan · Living Profile">
-  <meta property="og:description" content="Interactive living hero and public Git work from Ryan Cowan.">
+  <title>Ryan Cowan · Personal Gateway</title>
+  <meta name="description" content="Ryan Cowan — personal gateway for story, Bridge AI OS, projects, and how to work together. @ryanehsacoza">
+  <meta property="og:title" content="Ryan Cowan · Personal Gateway">
+  <meta property="og:description" content="Meet Ryan, explore Bridge AI OS and projects, then start a real conversation.">
   <meta property="og:image" content="/assets/ryan-hero.webp">
+  <link rel="canonical" href="https://empty-night-583f.thebridgeaiagency.workers.dev/">
   <meta name="theme-color" content="#031120">
+  <link rel="preload" as="image" href="/assets/ryan-hero.webp" type="image/webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <a class="skip" href="#story">Skip to content</a>
+  <a class="skip" href="#intro">Skip to content</a>
 
   <header class="top">
-    <p class="brand" aria-label="Site brand">Ryan Cowan</p>
+    <a class="brand" href="#intro">Ryan Cowan</a>
     <nav class="nav" aria-label="Primary">
-      <a href="#story">Story</a>
-      <a href="#presence">Git</a>
-      <a href="#work">Work</a>
-      <a href="#connect">Connect</a>
+      <a href="#story">My story</a>
+      <a href="#bridge">Bridge AI OS</a>
+      <a href="#projects">Projects</a>
+      <a href="#work-with-me">Work with me</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero moving" id="hero" aria-label="Interactive Ryan Cowan photo hero">
-      <div class="art" role="img" aria-label="Ryan Cowan, children and Ballito scenic montage"></div>
-      <div class="scanlines" aria-hidden="true"></div>
-      <div class="globe" aria-hidden="true"></div>
-      <div class="hero-brand">
-        <p class="hero-name">Ryan Cowan</p>
-        <p class="hero-line">Our time is now.</p>
+    <section class="intro" id="intro">
+      <p class="eyebrow">Personal gateway</p>
+      <h1>Ryan Cowan</h1>
+      <p class="lede intro-lede">
+        Builder at the edge of family, coast, and code. Who I am, what I’m building,
+        and how we can work together — in a few clear steps.
+      </p>
+      <div class="cta-row hero-cta">
+        <a class="btn primary" href="#story">Meet Ryan</a>
+        <a class="btn ghost" href="#projects">Explore my work</a>
+        <a class="btn ghost" href="#work-with-me">Work with me</a>
       </div>
-      <div class="hint" id="hint">Hover Ryan, the kids, baby, family or coastline · Tap on mobile</div>
-      <div class="audiosignal" id="signal" aria-live="polite"></div>
-      <div id="regions"></div>
     </section>
 
-    <section class="story" id="story">
-      <h1 data-split>OUR TIME IS NOW.</h1>
+    <section class="hero moving" id="hero" aria-label="Interactive living-profile montage">
+      <div class="stage" id="stage">
+        <div class="art" role="img" aria-label="Ryan Cowan living-profile montage with family, Ballito, and journey chapters"></div>
+        <div class="scanlines" aria-hidden="true"></div>
+        <div class="globe" aria-hidden="true"></div>
+        <div class="hint" id="hint">Tap glowing chrome on the image, or Enable audio for portrait regions</div>
+        <div class="audiosignal" id="signal" aria-live="polite"></div>
+        <div id="regions" role="group" aria-label="Image map controls"></div>
+      </div>
+    </section>
+
+    <section class="story panel" id="story" aria-labelledby="story-title">
+      <p class="eyebrow">My story</p>
+      <h2 id="story-title">Our time is now</h2>
       <p class="lede">
-        A living portrait of family, coast, and craft — with public work from
+        I’m Ryan — father, builder, and operator focused on turning ambitious systems into
+        usable tools. Ballito’s coastline and family keep the work grounded. Public code lives on
         <a id="gh-handle-link" href="https://github.com/ryanehsacoza" rel="noopener noreferrer">@ryanehsacoza</a>.
       </p>
-      <div class="demo-panel" role="group" aria-label="Audio controls">
+      <div class="demo-panel" role="group" aria-label="Optional portrait audio">
         <button type="button" id="enable">Enable audio</button>
         <button type="button" id="mute">Mute</button>
         <button type="button" id="stop">Stop sound</button>
       </div>
       <p class="fine">
-        Synthetic speech and ambient tones only — not recordings of Ryan or his children.
-        Browsers may require one tap before hover audio unlocks. Portrait motion is a layered 2.5D simulation.
+        Portrait audio is opt-in and synthesized — not recordings of Ryan or his children.
+        Sensitive family details stay under my control; interaction with children’s images is optional.
       </p>
     </section>
 
-    <section class="presence" id="presence" aria-labelledby="presence-title">
-      <div class="presence-copy">
-        <p class="eyebrow">Git presence</p>
-        <h2 id="presence-title">Building in public</h2>
-        <p id="presence-bio" class="lede">Loading profile…</p>
-        <ul class="meta" id="presence-meta" aria-label="GitHub stats"></ul>
-        <div class="cta-row">
-          <a class="btn primary" id="gh-profile-btn" href="https://github.com/ryanehsacoza" rel="noopener noreferrer">View GitHub</a>
-          <a class="btn ghost" href="#connect">Say hello</a>
-        </div>
-      </div>
-      <div class="presence-visual" aria-hidden="false">
-        <img id="gh-avatar" class="avatar" src="https://avatars.githubusercontent.com/u/50844727?v=4" width="160" height="160" alt="GitHub avatar for ryanehsacoza">
-        <p class="avatar-caption" id="gh-login">@ryanehsacoza</p>
+    <section class="panel" id="bridge" aria-labelledby="bridge-title">
+      <p class="eyebrow">Main business</p>
+      <h2 id="bridge-title">Bridge AI OS</h2>
+      <p class="lede">
+        An AI operating system direction for agencies and operators: control-plane style
+        administration, agents, workflows, and governed integrations. Status today:
+        <strong class="status-pill status-dev">in development / multi-surface</strong> —
+        not every dashboard claim is production-verified yet.
+      </p>
+      <ul class="bullet-list">
+        <li>Who it helps: teams that need a command center over AI agents, plugins, and ops.</li>
+        <li>Practical path: start with identity, dashboard health, and evidence-backed tasktrees.</li>
+        <li>Proof: curated demos and repos below — labeled by evidence, not aspiration.</li>
+      </ul>
+      <div class="cta-row">
+        <a class="btn primary" href="#projects">See related projects</a>
+        <a class="btn ghost" href="#work-with-me">Ask about Bridge AI OS</a>
       </div>
     </section>
 
-    <section class="work" id="work" aria-labelledby="work-title">
-      <p class="eyebrow">Selected repositories</p>
-      <h2 id="work-title">Public work</h2>
-      <p class="lede">Live from GitHub — sorted by recent activity.</p>
-      <ul class="repo-list" id="repo-list">
+    <section class="panel" id="projects" aria-labelledby="projects-title">
+      <p class="eyebrow">Portfolio</p>
+      <h2 id="projects-title">Projects</h2>
+      <p class="lede">Cards below mix curated product lanes with live public GitHub activity.</p>
+
+      <ul class="project-grid" aria-label="Curated projects">
+        <li class="project">
+          <p class="status-pill status-dev">in development</p>
+          <h3>Bridge AI OS</h3>
+          <p>Control-plane and autonomous OS direction for multi-tenant AI operations.</p>
+          <a href="#bridge">Overview</a>
+        </li>
+        <li class="project">
+          <p class="status-pill status-concept">concept / related</p>
+          <h3>EHSA / Hospital in a Box</h3>
+          <p>Healthcare and aid mission lane — keep outcomes distinct from shipped systems.</p>
+          <a href="#work-with-me">Discuss</a>
+        </li>
+        <li class="project">
+          <p class="status-pill status-live">live</p>
+          <h3>This gateway</h3>
+          <p>Personal profile Worker on Cloudflare — cinematic hero plus verified contact path.</p>
+          <a href="https://empty-night-583f.thebridgeaiagency.workers.dev/" rel="noopener noreferrer">Open live</a>
+        </li>
+      </ul>
+
+      <div class="presence" id="presence" aria-labelledby="presence-title">
+        <div class="presence-copy">
+          <p class="eyebrow">Git presence</p>
+          <h3 id="presence-title">Public repositories</h3>
+          <p id="presence-bio" class="lede">Loading profile…</p>
+          <p id="feed-status" class="fine" hidden></p>
+          <ul class="meta" id="presence-meta" aria-label="GitHub stats"></ul>
+          <div class="cta-row">
+            <a class="btn primary" id="gh-profile-btn" href="https://github.com/ryanehsacoza" rel="noopener noreferrer">View GitHub</a>
+          </div>
+        </div>
+        <div class="presence-visual">
+          <img id="gh-avatar" class="avatar" src="https://avatars.githubusercontent.com/u/50844727?v=4" width="160" height="160" alt="GitHub avatar for ryanehsacoza">
+          <p class="avatar-caption" id="gh-login">@ryanehsacoza</p>
+        </div>
+      </div>
+
+      <ul class="repo-list" id="repo-list" aria-label="Repository list">
         <li class="repo-loading">Fetching repositories…</li>
       </ul>
     </section>
 
-    <section class="connect" id="connect" aria-labelledby="connect-title">
-      <p class="eyebrow">Connect</p>
-      <h2 id="connect-title">Open for collaboration</h2>
+    <section class="panel" id="work-with-me" aria-labelledby="connect-title">
+      <p class="eyebrow">Work with me</p>
+      <h2 id="connect-title">Start a real conversation</h2>
       <p class="lede">
-        Prefer GitHub for code and issues. For consulting or a quick intro, open a conversation from the profile.
+        Best fits: AI control-plane / agent ops advisory, product architecture reviews,
+        and hands-on Cloudflare or full-stack delivery. Tell me who you are and what you need next.
       </p>
       <div class="cta-row">
-        <a class="btn primary" href="https://github.com/ryanehsacoza" rel="noopener noreferrer">GitHub profile</a>
-        <a class="btn ghost" href="https://github.com/ryanehsacoza?tab=repositories" rel="noopener noreferrer">All repos</a>
+        <a class="btn primary" href="mailto:thebridgeaiagency@gmail.com?subject=Work%20with%20Ryan%20Cowan&body=Hi%20Ryan%2C%0A%0AName%20%2F%20org%3A%0AWhat%20I%20need%3A%0ATimeline%3A%0A">Email enquiry</a>
+        <a class="btn ghost" href="https://github.com/ryanehsacoza" rel="noopener noreferrer">GitHub</a>
       </div>
+      <p class="fine">Enquiry opens your mail client to <strong>thebridgeaiagency@gmail.com</strong>. No public form posts are sent automatically.</p>
     </section>
   </main>
 
   <footer class="foot">
-    <p><strong>Ryan Cowan</strong> · Living Hero profile · Deployed on Cloudflare Workers</p>
-    <p class="fine">Audio is synthetic. Family scenes are personal; please treat them with care.</p>
+    <p><strong>Ryan Cowan</strong> · Personal gateway · Cloudflare Workers</p>
+    <p class="fine">Audio is synthetic. Family scenes are personal — treat them with care.</p>
   </footer>
 
   <script src="/hero.js" type="module"></script>

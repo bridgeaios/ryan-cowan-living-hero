@@ -6,6 +6,12 @@
   "account_id": "8e208744c31fc18f880f59bf18d4c645",
   "workers_dev": true,
   "preview_urls": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/assets/ryan-hero.webp"]
+  },
   "kv_namespaces": [
     {
       "binding": "SITE",

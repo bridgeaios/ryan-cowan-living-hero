@@ -10,3 +10,17 @@ dist/
 cloudflare-credentials*
 *.pem
 .wrangler-credentials*
+
+dist/
+*.b64
+_*.txt
+payload*.json
+
+
+dist-worker*
+exec-*.js
+mcp-put-*.js
+kv-*.txt
+payload*.json
+_*.txt
+scripts/gen-kv-exec.js
